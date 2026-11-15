@@ -1,0 +1,26 @@
+[
+  {
+    "id": "craftterra",
+    "nombre": "CraftTerra",
+    "temporada": "TEMPORADA 1 · LA BARRERA",
+    "frase": "Una isla rodeada por una barrera que nadie ha cruzado. Lo que hay más allá depende de vosotros.",
+    "servidor": "rails-accesses.tun.ply.gg",
+    "nombre_servidor": "CraftTerra SMP",
+    "mrpack": "https://github.com/a1t0r1234/NebulaLauncher/releases/download/craftterra/CraftTerra-1.21.11.mrpack",
+    "extras": [],
+    "novedades": [
+      {
+        "titulo": "El menú de CraftTerra estrena la isla",
+        "tipo": "Mod",
+        "fecha": "2026-11-14"
+      },
+      {
+        "titulo": "Llega el launcher de Nebula",
+        "tipo": "Launcher",
+        "fecha": "2026-11-14"
+      }
+    ],
+    "logo": "img/proyectos/craftterra_logo.png",
+    "icono": "img/proyectos/craftterra_icono.png"
+  }
+]

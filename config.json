@@ -1,0 +1,5 @@
+{
+  "client_id": "a066c3f0-9987-4cd8-9fe9-09cd0f70502a",
+  "redirect_uri": "https://login.microsoftonline.com/common/oauth2/nativeclient",
+  "panel": null
+}

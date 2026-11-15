@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+# proyectos de cada uno (con rutas de su PC); en el repositorio va proyectos.ejemplo.json
+proyectos.json
+recursos/index_antes_del_logo.html
+build/
+dist/
+*.spec

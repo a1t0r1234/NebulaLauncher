@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Nebula Launcher</title>
+<style>
+@font-face{font-family:"Silk";src:local("Silkscreen")}
+:root{
+  --void:#07060f; --edge:#2b2650; --text:#ece9ff; --muted:#9d97c9; --dim:#6c6699;
+  --violet:#a78bfa; --pink:#f472b6; --cyan:#67e8f9; --ok:#4ade80; --bad:#f87171;
+  --display:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif; --body:"Segoe UI",system-ui,sans-serif;
+  --pixel:"Silkscreen","Press Start 2P","Consolas",monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--void);color:var(--text);font-family:var(--body);user-select:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.bg{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated;object-fit:cover}
+.shade{position:fixed;inset:0;background:linear-gradient(90deg,#07060f 0%,#07060ff2 22%,#07060fb0 42%,#07060f30 65%,#07060f10 100%),linear-gradient(0deg,#07060f 0%,#07060fcc 18%,transparent 45%)}
+.stars{position:fixed;inset:0 50% 0 0;width:50%;height:100%;pointer-events:none}
+.tbar{position:fixed;left:0;right:0;top:0;height:34px;display:flex;align-items:center;gap:10px;padding-left:14px;background:#06050ccc;border-bottom:1px solid #ffffff0d;z-index:20;font-size:11px}
+.mark{width:20px;height:20px;object-fit:contain;filter:drop-shadow(0 0 6px #7c5cff88)}
+.brand{font-family:var(--pixel);letter-spacing:.16em;font-size:10px;color:#d9d3ff;font-weight:700}
+.chip{font-size:10px;padding:1px 8px;border-radius:99px;border:1px solid #a78bfa55;color:var(--violet);background:#a78bfa14}
+.drag{flex:1;height:100%}
+.win{display:flex;height:100%}
+.win button{width:46px;height:100%;color:var(--muted);font-size:14px}
+.win button:hover{background:#ffffff12;color:#fff}
+.win button.x:hover{background:#c42b1c}
+.rail{position:fixed;left:0;top:34px;bottom:0;width:84px;background:#06050cd9;border-right:1px solid #ffffff0d;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;z-index:10}
+.proj{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;position:relative;margin-bottom:2px;font-family:var(--pixel);font-weight:700;font-size:13px;color:#fff;text-shadow:1px 1px 0 #0008;background:#17142e}
+.proj img{width:38px;height:38px;object-fit:contain}
+.logo:has(.plogo){filter:none;text-shadow:none;background:none;-webkit-text-fill-color:initial}
+.plogo{display:block;width:min(620px,50vw);height:auto;filter:none!important}
+.proj.on{background:radial-gradient(circle at 50% 50%,#3a2a12,#14121f 70%);box-shadow:0 0 0 2px var(--void),0 0 0 4px var(--violet),0 0 20px #a78bfa66}
+.proj.on::before{content:"";position:absolute;left:-18px;top:12px;width:4px;height:24px;border-radius:0 4px 4px 0;background:var(--violet)}
+.sep{width:36px;height:1px;background:#ffffff14;margin:10px 0}
+.nav{width:68px;padding:8px 0 7px;border-radius:12px;display:grid;justify-items:center;gap:4px;font-size:10.5px;color:var(--muted)}
+.nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav:hover{color:#fff;background:#ffffff0a}
+.nav.on{background:#a78bfa1f;color:#fff;box-shadow:inset 0 0 0 1px #a78bfa40}
+.grow{flex:1}
+.me{width:38px;height:38px;border-radius:10px;image-rendering:pixelated;outline:2px solid #ffffff1a;margin-top:6px;background:#17142e}
+main{position:fixed;left:84px;right:0;top:34px;bottom:0}
+.hero{position:absolute;left:6vw;top:15vh;width:min(560px,60vw)}
+.kick{display:flex;align-items:center;gap:10px;font-family:var(--pixel);font-size:10px;letter-spacing:.2em;color:var(--violet);font-weight:700}
+.kick::before{content:"";width:22px;height:2px;background:var(--violet)}
+.logo{font-family:var(--pixel);font-weight:900;font-size:clamp(44px,5.4vw,72px);line-height:1;margin:14px 0 8px;letter-spacing:2px;
+  background:linear-gradient(180deg,#fff7d6 0%,#ffd98a 45%,#e2933a 55%,#b25d22 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 3px 0 #5a2a10) drop-shadow(0 6px 0 #2a1206) drop-shadow(0 0 24px #f59e0b55)}
+.tagline{font-size:15px;color:#cdc8ef;margin:0 0 26px;max-width:440px;line-height:1.5}
+.playrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.play{height:60px;padding:0 34px 0 26px;border-radius:14px;display:flex;align-items:center;gap:14px;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.14em;color:#160a26;
+  background:linear-gradient(100deg,#c4b5fd,#a78bfa 45%,#f0abfc);box-shadow:0 10px 40px -8px #a78bfaaa,inset 0 1px 0 #ffffffaa,inset 0 -3px 0 #6d28d955;transition:transform .15s,filter .15s}
+.play:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.play:disabled{filter:grayscale(.6) brightness(.8);cursor:default;transform:none}
+.play i{width:0;height:0;border-left:14px solid #160a26;border-top:9px solid transparent;border-bottom:9px solid transparent}
+.sub{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.sub b{color:var(--text);font-weight:600}
+.prog{margin-top:18px;display:grid;gap:7px;font-size:12px;color:var(--muted);max-width:460px}
+.track{height:6px;border-radius:9px;background:#ffffff10;overflow:hidden}
+.track div{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--pink));transition:width .2s}
+.pills{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:99px;background:#0b0a18cc;border:1px solid #ffffff14;font-size:11.5px;color:#d6d2f5}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--dim)}
+.dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)}.dot.bad{background:var(--bad)}
+.cards{position:absolute;left:6vw;right:4vw;bottom:28px;display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:16px}
+.card{background:linear-gradient(180deg,#14112acc,#0c0a1ccc);border:1px solid #ffffff12;border-radius:16px;padding:18px 20px;backdrop-filter:blur(10px);display:grid;gap:12px;align-content:start;min-height:170px}
+.card h4{margin:0;font-family:var(--display);font-size:15px}
+.newsi b{display:block;font-size:13px;font-weight:600}
+.newsi small{color:var(--dim);font-size:11px}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.online{display:flex;align-items:baseline;gap:8px}
+.online b{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.err{color:#fecaca;background:#7f1d1d55;border:1px solid #f8717155;border-radius:10px;padding:10px 12px;font-size:12.5px;max-width:460px;margin-top:14px}
+/* login */
+.lwrap{position:fixed;inset:34px 0 0 0;display:flex;align-items:center;padding-left:10vw;z-index:15}
+.lcard{width:400px;padding:30px;border-radius:20px;background:linear-gradient(180deg,#14112ae6,#0b0a19e6);border:1px solid #ffffff14;backdrop-filter:blur(14px);box-shadow:0 30px 80px -20px #000c;display:grid;gap:16px}
+.lcard .logo{font-size:40px;margin:2px 0 0}
+.banner{width:100%;height:auto;margin:4px 0 2px;filter:drop-shadow(0 6px 24px #6d5cff55)}
+.railLogo{width:44px;height:44px;object-fit:contain;margin:2px 0 10px;filter:drop-shadow(0 0 10px #7c5cff66)}
+.ms{height:50px;border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 16px;border:1px solid #ffffff1a;background:#ffffff08;font-size:14px;font-weight:600}
+.ms:hover{background:#ffffff12}
+.msq{width:18px;height:18px;display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.msq i:nth-child(1){background:#f25022}.msq i:nth-child(2){background:#7fba00}.msq i:nth-child(3){background:#00a4ef}.msq i:nth-child(4){background:#ffb900}
+/* ajustes */
+.modal{position:fixed;inset:0;background:#000a;display:grid;place-items:center;z-index:30}
+.panel{width:420px;padding:26px;border-radius:18px;background:#110f22;border:1px solid var(--edge);display:grid;gap:18px}
+.panel h3{margin:0;font-family:var(--display)}
+.row{display:grid;gap:8px;font-size:13px;color:var(--muted)}
+.row output{color:#fff;font-weight:600}
+input[type=range]{accent-color:var(--violet);width:100%}
+.btn{height:42px;border-radius:10px;padding:0 18px;font-weight:700;color:#160a26;background:linear-gradient(100deg,#c4b5fd,#a78bfa 45%,#f0abfc)}
+.ghost{height:42px;border-radius:10px;padding:0 18px;border:1px solid #ffffff1a;color:#fff}
+.acts{display:flex;justify-content:space-between;gap:10px}
+/* animaciones al pasar el ratón por los logos: destello que recorre solo el dibujo (máscara con la propia imagen) */
+.conBrillo{position:relative;display:inline-block;line-height:0}
+.conBrillo .destello{position:absolute;inset:0;pointer-events:none;-webkit-mask-image:var(--m);mask-image:var(--m);-webkit-mask-size:100% 100%;mask-size:100% 100%;
+  background:linear-gradient(110deg,transparent 38%,#ffffffb0 50%,transparent 62%);background-size:260% 100%;background-position:160% 0;opacity:0}
+.proj:hover .destello{animation:barrido .8s ease-out}
+.logo:hover .destello{animation:barrido 1.1s ease-out}
+@keyframes barrido{0%{opacity:1;background-position:160% 0}100%{opacity:1;background-position:-60% 0}}
+.proj:hover .conBrillo{animation:choque .55s ease-in-out forwards}
+@keyframes choque{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.18) rotate(-12deg)}60%{transform:scale(1.18) rotate(9deg)}100%{transform:scale(1.1) rotate(0)}}
+.logo:hover .conBrillo{animation:flota 1.8s ease-in-out infinite}
+@keyframes flota{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(-.8deg)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<canvas class="bg" id="mapa" width="320" height="180"></canvas>
+<div class="shade"></div>
+<canvas class="stars" id="estrellas" width="560" height="720"></canvas>
+
+<div class="tbar">
+  <img class="mark" src="img/logo.png" alt=""><span class="brand">NEBULA STUDIOS</span><span class="chip">v1.0.0</span>
+  <div class="drag pywebview-drag-region"></div>
+  <div class="win"><button id="bMin" title="Minimizar">—</button><button class="x" id="bCerrar" title="Cerrar">✕</button></div>
+</div>
+
+<!-- entrar -->
+<div class="lwrap" id="vLogin" hidden>
+  <div class="lcard">
+    <div class="kick">BIENVENIDO</div>
+    <img class="banner" src="img/banner.png" alt="Nebula Studios">
+    <div class="small">Inicia sesión con la cuenta de Microsoft que tiene <b style="color:#fff">Minecraft: Java Edition</b>. Solo hace falta la primera vez.</div>
+    <button class="ms" id="bEntrar"><span class="msq"><i></i><i></i><i></i><i></i></span><span id="tEntrar">Iniciar sesión con Microsoft</span></button>
+    <div class="err" id="eLogin" hidden></div>
+  </div>
+</div>
+
+<!-- inicio -->
+<nav class="rail" id="vRail" hidden>
+  <img class="railLogo" src="img/logo.png" alt="Nebula Studios">
+  <div id="listaProyectos"></div>
+  <div class="sep"></div>
+  <button class="nav on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</button>
+  <div class="grow"></div>
+  <button class="nav" id="bAjustes"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Ajustes</button>
+  <canvas class="me" id="cara" width="8" height="8" title=""></canvas>
+</nav>
+<main id="vInicio" hidden>
+  <div class="hero">
+    <div class="kick" id="pTemporada"></div>
+    <div class="logo" id="pNombre"></div>
+    <p class="tagline" id="pFrase"></p>
+    <div class="playrow">
+      <button class="play" id="bJugar"><i></i>JUGAR</button>
+      <div class="sub"><span>Entrarás en <b id="pServidor"></b></span><span id="pCuenta"></span></div>
+    </div>
+    <div class="prog" id="progreso" hidden><span id="tProgreso">Preparando…</span><div class="track"><div id="barra"></div></div></div>
+    <div class="err" id="eJugar" hidden></div>
+    <div class="pills">
+      <span class="pill"><span class="dot" id="dEstado"></span><span id="tEstado">Comprobando el servidor…</span></span>
+      <span class="pill" id="tPing" hidden></span>
+    </div>
+  </div>
+  <div class="cards">
+    <div class="card"><h4>Novedades</h4><div id="novedades" style="display:grid;gap:12px"></div></div>
+    <div class="card"><h4>Tu partida</h4><div class="small">Tus horas, jefes vencidos y puesto en el ranking aparecerán aquí cuando esté listo el panel de cuentas.</div></div>
+    <div class="card"><h4>Ahora en el servidor</h4><div class="online"><b id="nOnline">–</b><span class="small" id="nMax"></span></div></div>
+  </div>
+</main>
+
+<div class="modal" id="vAjustes" hidden>
+  <div class="panel">
+    <h3>Ajustes</h3>
+    <label class="row">Memoria para Minecraft: <output id="oRam"></output><input type="range" id="iRam" min="2" max="16" step="1"></label>
+    <label class="row" style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="iOpc"> Instalar también los mods opcionales (Distant Horizons, shaders…)</label>
+    <div class="acts"><button class="ghost" id="bSalir">Cerrar sesión</button><button class="btn" id="bGuardar">Guardar</button></div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let datos=null, actual=null;
+
+/* fondo: mapa pixelado + estrellas */
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function ruido(seed){const r=rng(seed),P=[];for(let i=0;i<256;i++)P[i]=r();const h=(x,y)=>P[(x*73856093^y*19349663)&255],s=t=>t*t*(3-2*t);
+  return(x,y)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=s(x-xi),yf=s(y-yi),a=h(xi,yi),b=h(xi+1,yi),c=h(xi,yi+1),d=h(xi+1,yi+1);return a+(b-a)*xf+(c-a)*yf+(a-b-c+d)*xf*yf;};}
+function fbm(n,x,y,o=6){let v=0,a=.5,f=1,t=0;for(let i=0;i<o;i++){v+=a*n(x*f,y*f);t+=a;a*=.5;f*=2.03;}return v/t;}
+function mapa(seed){const c=$('mapa'),g=c.getContext('2d'),W=c.width,H=c.height,n=ruido(seed),img=g.createImageData(W,H),hs=[];
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){let e=fbm(n,x/46,y/46);const dx=(x-W*.66)/W,dy=(y-H*.5)/H;hs.push(e+.2-Math.sqrt(dx*dx+dy*dy)*.55);}
+  const pal=[[.30,[9,28,52]],[.38,[14,48,82]],[.42,[30,92,128]],[.44,[196,180,124]],[.52,[66,122,56]],[.58,[44,94,44]],[.64,[30,70,36]],[.70,[96,98,102]],[.76,[132,134,138]],[9,[228,236,242]]];
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const e=hs[y*W+x],col=pal.find(p=>e<p[0])[1],e2=hs[Math.max(0,y-1)*W+Math.max(0,x-1)];
+    const sh=Math.max(.6,Math.min(1.35,e>.42?1+(e-e2)*7:1)),i=(y*W+x)*4;img.data[i]=col[0]*sh;img.data[i+1]=col[1]*sh;img.data[i+2]=col[2]*sh;img.data[i+3]=255;}
+  g.putImageData(img,0,0);}
+function estrellas(){const c=$('estrellas'),g=c.getContext('2d'),r=rng(1);for(let i=0;i<110;i++){const a=r();g.fillStyle=`rgba(${200+r()*55},${190+r()*40},255,${.25+a*.6})`;const s=a>.93?2:1;g.fillRect(r()*c.width,r()*c.height,s,s);}}
+
+/* ventana */
+$('bMin').onclick=()=>pywebview.api.minimizar();
+$('bCerrar').onclick=()=>pywebview.api.cerrar();
+
+function mostrar(vista){$('vLogin').hidden=vista!=='login';$('vRail').hidden=$('vInicio').hidden=vista!=='inicio';}
+
+async function arrancar(){
+  datos=await pywebview.api.inicio();
+  if(!datos.sesion){mostrar('login');
+    if(!datos.microsoft_listo){$('eLogin').hidden=false;$('eLogin').textContent='El inicio de sesión con Microsoft aún no está configurado (falta registrar la app en Azure).';$('bEntrar').disabled=true;}
+    return;}
+  pintarInicio();
+}
+
+$('bEntrar').onclick=async()=>{
+  $('eLogin').hidden=true;$('tEntrar').textContent='Esperando a Microsoft…';$('bEntrar').disabled=true;
+  const r=await pywebview.api.entrar();
+  $('bEntrar').disabled=false;$('tEntrar').textContent='Iniciar sesión con Microsoft';
+  if(r.error){$('eLogin').hidden=false;$('eLogin').textContent=r.error;return;}
+  datos.sesion=r;pintarInicio();
+};
+
+function conBrillo(src,clase,alt){const w=document.createElement('span');w.className='conBrillo';const im=document.createElement('img');im.src=src;im.alt=alt||'';if(clase)im.className=clase;
+  const d=document.createElement('span');d.className='destello';d.style.setProperty('--m',`url("${src}")`);w.append(im,d);return w;}
+function pintarInicio(){
+  mostrar('inicio');
+  const lista=$('listaProyectos');lista.innerHTML='';
+  if(!datos.proyectos.length){$('pNombre').textContent='SIN PROYECTOS';$('pFrase').textContent='Todavía no tienes ningún proyecto asignado.';$('bJugar').disabled=true;return;}
+  datos.proyectos.forEach((p,i)=>{const b=document.createElement('button');b.className='proj';if(p.icono){b.appendChild(conBrillo(p.icono));}else b.textContent=p.nombre.slice(0,2).toUpperCase();b.title=p.nombre;b.onclick=()=>elegir(p);lista.appendChild(b);p._b=b;});
+  elegir(datos.proyectos[0]);
+  $('pCuenta').textContent='Cuenta: '+datos.sesion.nombre;
+  cara(datos.sesion.nombre);
+}
+
+async function elegir(p){
+  actual=p;datos.proyectos.forEach(x=>x._b.classList.toggle('on',x===p));
+  $('pTemporada').textContent=p.temporada||'';if(p.logo){$('pNombre').innerHTML='';$('pNombre').appendChild(conBrillo(p.logo,'plogo',p.nombre));}else $('pNombre').textContent=p.nombre.toUpperCase();$('pFrase').textContent=p.frase||'';$('pServidor').textContent=p.nombre_servidor;
+  const nov=$('novedades');nov.innerHTML='';
+  (p.novedades||[]).slice(0,3).forEach(n=>{const d=document.createElement('div');d.className='newsi';const b=document.createElement('b');b.textContent=n.titulo;const s=document.createElement('small');s.textContent=n.tipo+' · '+hace(n.fecha);d.append(b,s);nov.appendChild(d);});
+  refrescarEstado();
+}
+function hace(f){const d=Math.round((Date.now()-new Date(f))/864e5);return d<=0?'hoy':d===1?'ayer':'hace '+d+' d';}
+
+async function refrescarEstado(){
+  if(!actual)return;const p=actual;
+  const e=await pywebview.api.estado(p.servidor);if(p!==actual)return;
+  $('dEstado').className='dot '+(e.abierto?'ok':'bad');
+  $('tEstado').textContent=e.abierto?'Servidor abierto':'Servidor cerrado';
+  $('tPing').hidden=!e.abierto;if(e.abierto)$('tPing').textContent='Ping '+e.ping+' ms';
+  $('nOnline').textContent=e.abierto?e.online:'–';$('nMax').textContent=e.abierto?'de '+e.max+' jugadores':'servidor cerrado';
+}
+setInterval(refrescarEstado,30000);
+
+$('bJugar').onclick=async()=>{
+  $('eJugar').hidden=true;
+  const r=await pywebview.api.jugar(actual.id);
+  if(r.error){fallo(r.error);return;}
+  $('bJugar').disabled=true;$('progreso').hidden=false;
+};
+function progreso(t,h,tot){$('tProgreso').textContent=t;$('barra').style.width=(tot?Math.min(100,h/tot*100):0)+'%';}
+function juegoAbierto(){$('tProgreso').textContent='Minecraft está abierto';$('barra').style.width='100%';}
+function juegoCerrado(code){$('bJugar').disabled=false;$('progreso').hidden=true;if(code)fallo('Minecraft se cerró con un error (código '+code+').');}
+function fallo(t){$('bJugar').disabled=false;$('progreso').hidden=true;$('eJugar').hidden=false;$('eJugar').textContent=t;}
+
+/* ajustes */
+$('bAjustes').onclick=()=>{const p=datos.preferencias;$('iRam').value=p.ram_gb;$('oRam').textContent=p.ram_gb+' GB';$('iOpc').checked=p.opcionales;$('vAjustes').hidden=false;};
+$('iRam').oninput=()=>$('oRam').textContent=$('iRam').value+' GB';
+$('vAjustes').onclick=e=>{if(e.target===$('vAjustes'))$('vAjustes').hidden=true;};
+$('bGuardar').onclick=async()=>{datos.preferencias=await pywebview.api.guardar_preferencias({ram_gb:+$('iRam').value,opcionales:$('iOpc').checked});$('vAjustes').hidden=true;};
+$('bSalir').onclick=async()=>{await pywebview.api.salir();$('vAjustes').hidden=true;datos.sesion=null;mostrar('login');};
+
+/* cara pixelada simple a partir del nombre (la skin real se pondrá cuando haya panel) */
+function cara(nombre){const c=$('cara'),g=c.getContext('2d');let s=0;for(const ch of nombre)s=s*31+ch.charCodeAt(0)|0;const r=rng(s);
+  const piel=['#c89b74','#f1c27d','#e0ac69','#8d5524','#ffdbac'][Math.floor(r()*5)],pelo=['#5a3b22','#1d1d1d','#b5651d','#e9d36b','#3a2a1a'][Math.floor(r()*5)];
+  g.fillStyle=piel;g.fillRect(0,0,8,8);g.fillStyle=pelo;g.fillRect(0,0,8,2);g.fillStyle='#fff';g.fillRect(1,4,2,1);g.fillRect(5,4,2,1);g.fillStyle='#2d4bb8';g.fillRect(2,4,1,1);g.fillRect(6,4,1,1);g.fillStyle='#6b3b2a';g.fillRect(3,6,2,1);c.title=nombre;}
+
+mapa(3);estrellas();
+window.addEventListener('pywebviewready',arrancar);
+</script>
+</body>
+</html>
