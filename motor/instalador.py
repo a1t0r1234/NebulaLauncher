@@ -17,7 +17,7 @@ import requests
 from . import ajustes
 
 S = requests.Session()
-S.headers["User-Agent"] = "NebulaLauncher/1.0"
+S.headers["User-Agent"] = "NebulaLauncher/" + ajustes.VERSION
 
 
 def carpeta(proyecto: dict) -> Path:
@@ -127,7 +127,7 @@ def lanzar(proyecto: dict, version: str, sesion: dict) -> subprocess.Popen:
         "gameDirectory": str(carpeta(proyecto)),
         "jvmArguments": [f"-Xmx{pref['ram_gb']}G", f"-Xms{min(2, pref['ram_gb'])}G"],
         "launcherName": "NebulaLauncher",
-        "launcherVersion": "1.0.0",
+        "launcherVersion": ajustes.VERSION,
     }
     orden = mll.command.get_minecraft_command(version, ajustes.MINECRAFT, opciones)
     if orden[0] == "java" and shutil.which("java") is None:

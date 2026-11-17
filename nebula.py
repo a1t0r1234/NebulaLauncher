@@ -3,6 +3,7 @@
 Uso: python nebula.py            (normal)
      python nebula.py --vista    (ver la pantalla principal sin iniciar sesión; Jugar sigue pidiendo una cuenta real)
 """
+import base64
 import json
 import sys
 import threading
@@ -11,7 +12,7 @@ import traceback
 
 import webview
 
-from motor import ajustes, cuenta, estado, instalador
+from motor import actualizar, ajustes, cuenta, estado, instalador
 
 
 class Api:
@@ -20,10 +21,24 @@ class Api:
         self._ventana = None
         self._sesion = None
         self._ocupado = False
+        self._maximizada = False
 
     # ---- ventana ----
     def minimizar(self):
         self._ventana.minimize()
+
+    def maximizar(self):
+        """Maximiza o restaura la ventana (botón ☐ y doble clic en la barra de arriba)."""
+        if self._maximizada:
+            self._ventana.restore()
+        else:
+            self._ventana.maximize()
+        self._maximizada = not self._maximizada
+        return self._maximizada
+
+    def pantalla_completa(self):
+        """F11: pantalla completa de verdad, sin barra de Windows."""
+        self._ventana.toggle_fullscreen()
 
     def cerrar(self):
         self._ventana.destroy()
@@ -46,7 +61,55 @@ class Api:
             "sesion": sesion,
             "preferencias": ajustes.preferencias(),
             "microsoft_listo": listo,
+            "version": ajustes.VERSION,
         }
+
+    def skin(self):
+        """La skin del jugador (PNG en data URL) para dibujar su cara. Se guarda en %APPDATA%/.nebula/skin.png por si no hay internet."""
+        cache = ajustes.DATOS / "skin.png"
+        url = (self._sesion or {}).get("skin")
+        if url:
+            try:
+                r = instalador.S.get(url, timeout=15)
+                r.raise_for_status()
+                cache.write_bytes(r.content)
+            except Exception:
+                pass
+        if not cache.exists():
+            return None
+        return "data:image/png;base64," + base64.b64encode(cache.read_bytes()).decode()
+
+    # ---- actualizaciones del launcher ----
+    def buscar_actualizacion(self):
+        self._nueva = actualizar.comprobar()
+        return self._nueva
+
+    def actualizar(self):
+        if not getattr(self, "_nueva", None):
+            return {"error": "No hay ninguna versión nueva."}
+        if self._ocupado:
+            return {"error": "Espera a que termine lo que se está preparando."}
+        self._ocupado = True
+        threading.Thread(target=self._actualizar, daemon=True).start()
+        return {"ok": True}
+
+    def _actualizar(self):
+        texto = {"t": ""}
+
+        def aviso(t, hecho, total):
+            if t:
+                texto["t"] = t
+            self._js("progresoAct", texto["t"], hecho, total)
+
+        try:
+            actualizar.instalar(self._nueva, aviso)
+            time.sleep(0.6)
+            self._ventana.destroy()                 # el .bat cambia el .exe en cuanto se cierra y lo vuelve a abrir
+        except Exception as e:
+            traceback.print_exc()
+            self._js("falloAct", str(e))
+        finally:
+            self._ocupado = False
 
     def estado(self, direccion):
         return estado.consultar(direccion)

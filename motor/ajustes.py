@@ -4,6 +4,9 @@ import os
 import sys
 from pathlib import Path
 
+# versión del launcher: subirla poco a poco con cada actualización (1.1.0 -> 1.1.1 arreglos, 1.2.0 novedades)
+VERSION = "1.1.0"
+
 # en el .exe (PyInstaller) la interfaz y los json van dentro, descomprimidos en sys._MEIPASS
 RAIZ = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
 DATOS = Path(os.environ.get("APPDATA", Path.home())) / ".nebula"

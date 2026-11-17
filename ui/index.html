@@ -52,10 +52,25 @@ main{position:fixed;left:84px;right:0;top:34px;bottom:0}
 .tagline{font-size:15px;color:#cdc8ef;margin:0 0 26px;max-width:440px;line-height:1.5}
 .playrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .play{height:60px;padding:0 34px 0 26px;border-radius:14px;display:flex;align-items:center;gap:14px;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.14em;color:#160a26;
-  background:linear-gradient(100deg,#c4b5fd,#a78bfa 45%,#f0abfc);box-shadow:0 10px 40px -8px #a78bfaaa,inset 0 1px 0 #ffffffaa,inset 0 -3px 0 #6d28d955;transition:transform .15s,filter .15s}
-.play:hover{transform:translateY(-1px);filter:brightness(1.06)}
-.play:disabled{filter:grayscale(.6) brightness(.8);cursor:default;transform:none}
+  position:relative;overflow:hidden;background:linear-gradient(100deg,#c4b5fd,#a78bfa 30%,#f0abfc 55%,#a78bfa 80%,#c4b5fd);background-size:220% 100%;background-position:0 0;
+  box-shadow:0 10px 40px -8px #a78bfaaa,inset 0 1px 0 #ffffffaa,inset 0 -3px 0 #6d28d955;transition:transform .18s,filter .18s;animation:respira 2.6s ease-in-out infinite}
+/* reposo: el brillo respira y cada pocos segundos le cruza una raya de luz */
+.play::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-40%;width:32%;transform:skewX(-20deg);pointer-events:none;
+  background:linear-gradient(90deg,transparent,#ffffffcc,transparent);opacity:.75;animation:raya 3.6s ease-in-out infinite}
+@keyframes respira{0%,100%{box-shadow:0 10px 34px -10px #a78bfa99,inset 0 1px 0 #ffffffaa,inset 0 -3px 0 #6d28d955}
+  50%{box-shadow:0 10px 52px -4px #e879f9cc,inset 0 1px 0 #ffffffaa,inset 0 -3px 0 #6d28d955}}
+@keyframes raya{0%,62%{left:-40%}88%,100%{left:125%}}
+/* ratón encima: sube, los colores se deslizan y la flecha empuja hacia delante */
+.play:hover{transform:translateY(-2px) scale(1.02);filter:brightness(1.07);animation:respira 1.4s ease-in-out infinite,colores 2.2s linear infinite}
+.play:hover::after{animation-duration:1.6s}
+.play:hover i{animation:empuja .7s ease-in-out infinite}
+@keyframes colores{from{background-position:0 0}to{background-position:220% 0}}
+@keyframes empuja{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+.play:active{transform:translateY(1px) scale(.98);filter:brightness(.97)}
+.play:disabled,.play:disabled:hover{filter:grayscale(.6) brightness(.8);cursor:default;transform:none;animation:none}
+.play:disabled::after{display:none}
 .play i{width:0;height:0;border-left:14px solid #160a26;border-top:9px solid transparent;border-bottom:9px solid transparent}
+@media (prefers-reduced-motion:reduce){.play,.play::after,.play:hover,.play:hover i{animation:none}}
 .sub{display:grid;gap:3px;font-size:12px;color:var(--muted)}
 .sub b{color:var(--text);font-weight:600}
 .prog{margin-top:18px;display:grid;gap:7px;font-size:12px;color:var(--muted);max-width:460px}
@@ -103,9 +118,20 @@ input[type=range]{accent-color:var(--violet);width:100%}
 @keyframes barrido{0%{opacity:1;background-position:160% 0}100%{opacity:1;background-position:-60% 0}}
 .proj:hover .conBrillo{animation:choque .55s ease-in-out forwards}
 @keyframes choque{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.18) rotate(-12deg)}60%{transform:scale(1.18) rotate(9deg)}100%{transform:scale(1.1) rotate(0)}}
-.logo:hover .conBrillo{animation:flota 1.8s ease-in-out infinite}
-@keyframes flota{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(-.8deg)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.act{position:fixed;right:22px;bottom:22px;width:330px;z-index:40;padding:16px 18px;border-radius:16px;background:#120e26f2;border:1px solid #a78bfa55;
+  box-shadow:0 18px 50px -12px #000c,0 0 0 1px #ffffff08,0 0 40px -18px #e879f9;animation:entraAct .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes entraAct{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.act h4{margin:0 0 4px;font-size:14px;color:#fff;display:flex;align-items:center;gap:8px}
+.act h4 span{font-size:10px;padding:1px 8px;border-radius:99px;background:#e879f922;color:#f0abfc;border:1px solid #e879f955}
+.act p{margin:0 0 12px;font-size:12px;color:var(--muted);white-space:pre-line;max-height:84px;overflow:hidden}
+.act .fila{display:flex;gap:8px}
+.act button{height:34px;padding:0 14px;border-radius:10px;font-size:12px;font-weight:700}
+.act .si{background:linear-gradient(100deg,#c4b5fd,#f0abfc);color:#160a26}
+.act .si:hover{filter:brightness(1.08)}
+.act .no{color:var(--muted);background:#ffffff0d}
+.act .no:hover{color:#fff;background:#ffffff18}
+.act .track{margin-top:10px}
 </style>
 </head>
 <body>
@@ -114,9 +140,9 @@ input[type=range]{accent-color:var(--violet);width:100%}
 <canvas class="stars" id="estrellas" width="560" height="720"></canvas>
 
 <div class="tbar">
-  <img class="mark" src="img/logo.png" alt=""><span class="brand">NEBULA STUDIOS</span><span class="chip">v1.0.0</span>
+  <img class="mark" src="img/logo.png" alt=""><span class="brand">NEBULA STUDIOS</span><span class="chip" id="version">v1.1.0</span>
   <div class="drag pywebview-drag-region"></div>
-  <div class="win"><button id="bMin" title="Minimizar">—</button><button class="x" id="bCerrar" title="Cerrar">✕</button></div>
+  <div class="win"><button id="bMin" title="Minimizar">—</button><button id="bMax" title="Maximizar">☐</button><button class="x" id="bCerrar" title="Cerrar">✕</button></div>
 </div>
 
 <!-- entrar -->
@@ -172,6 +198,13 @@ input[type=range]{accent-color:var(--violet);width:100%}
   </div>
 </div>
 
+<div class="act" id="vAct" hidden>
+  <h4>Nueva versión del launcher <span id="aVer"></span></h4>
+  <p id="aNotas"></p>
+  <div class="fila" id="aBotones"><button class="si" id="bAct">Actualizar</button><button class="no" id="bLuego">Más tarde</button></div>
+  <div id="aProg" hidden><span id="aTexto" style="font-size:12px;color:#d9d3ff">Preparando…</span><div class="track"><div id="aBarra"></div></div></div>
+  <div class="err" id="eAct" hidden></div>
+</div>
 <script>
 const $=id=>document.getElementById(id);
 let datos=null, actual=null;
@@ -192,6 +225,10 @@ function estrellas(){const c=$('estrellas'),g=c.getContext('2d'),r=rng(1);for(le
 /* ventana */
 $('bMin').onclick=()=>pywebview.api.minimizar();
 $('bCerrar').onclick=()=>pywebview.api.cerrar();
+async function alternarMax(){const m=await pywebview.api.maximizar();$('bMax').textContent=m?'❐':'☐';$('bMax').title=m?'Restaurar':'Maximizar';}
+$('bMax').onclick=alternarMax;
+document.querySelector('.drag').addEventListener('dblclick',alternarMax);
+document.addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();pywebview.api.pantalla_completa();}});
 
 function mostrar(vista){$('vLogin').hidden=vista!=='login';$('vRail').hidden=$('vInicio').hidden=vista!=='inicio';}
 
@@ -220,6 +257,7 @@ function pintarInicio(){
   datos.proyectos.forEach((p,i)=>{const b=document.createElement('button');b.className='proj';if(p.icono){b.appendChild(conBrillo(p.icono));}else b.textContent=p.nombre.slice(0,2).toUpperCase();b.title=p.nombre;b.onclick=()=>elegir(p);lista.appendChild(b);p._b=b;});
   elegir(datos.proyectos[0]);
   $('pCuenta').textContent='Cuenta: '+datos.sesion.nombre;
+  if(datos.version)$('version').textContent='v'+datos.version;
   cara(datos.sesion.nombre);
 }
 
@@ -260,13 +298,28 @@ $('vAjustes').onclick=e=>{if(e.target===$('vAjustes'))$('vAjustes').hidden=true;
 $('bGuardar').onclick=async()=>{datos.preferencias=await pywebview.api.guardar_preferencias({ram_gb:+$('iRam').value,opcionales:$('iOpc').checked});$('vAjustes').hidden=true;};
 $('bSalir').onclick=async()=>{await pywebview.api.salir();$('vAjustes').hidden=true;datos.sesion=null;mostrar('login');};
 
-/* cara pixelada simple a partir del nombre (la skin real se pondrá cuando haya panel) */
-function cara(nombre){const c=$('cara'),g=c.getContext('2d');let s=0;for(const ch of nombre)s=s*31+ch.charCodeAt(0)|0;const r=rng(s);
+/* cara de la skin del jugador (cara + capa del sombrero); si no hay skin, una cara pixelada a partir del nombre */
+async function cara(nombre){const c=$('cara'),g=c.getContext('2d');c.title=nombre;
+  try{const url=await pywebview.api.skin();if(url){const im=new Image();await new Promise((ok,mal)=>{im.onload=ok;im.onerror=mal;im.src=url;});
+    g.imageSmoothingEnabled=false;g.clearRect(0,0,8,8);g.drawImage(im,8,8,8,8,0,0,8,8);g.drawImage(im,40,8,8,8,0,0,8,8);return;}}catch(e){}
+  caraInventada(nombre);}
+function caraInventada(nombre){const c=$('cara'),g=c.getContext('2d');let s=0;for(const ch of nombre)s=s*31+ch.charCodeAt(0)|0;const r=rng(s);
   const piel=['#c89b74','#f1c27d','#e0ac69','#8d5524','#ffdbac'][Math.floor(r()*5)],pelo=['#5a3b22','#1d1d1d','#b5651d','#e9d36b','#3a2a1a'][Math.floor(r()*5)];
   g.fillStyle=piel;g.fillRect(0,0,8,8);g.fillStyle=pelo;g.fillRect(0,0,8,2);g.fillStyle='#fff';g.fillRect(1,4,2,1);g.fillRect(5,4,2,1);g.fillStyle='#2d4bb8';g.fillRect(2,4,1,1);g.fillRect(6,4,1,1);g.fillStyle='#6b3b2a';g.fillRect(3,6,2,1);c.title=nombre;}
 
 mapa(3);estrellas();
 window.addEventListener('pywebviewready',arrancar);
+/* actualizaciones del launcher: se mira al abrir; el jugador decide cuándo */
+async function buscarActualizacion(){try{const a=await pywebview.api.buscar_actualizacion();if(!a)return;
+  $('aVer').textContent='v'+a.version;$('aNotas').textContent=a.notas||'Mejoras y arreglos.';
+  if(!a.puede_instalar){$('bAct').disabled=true;$('bAct').title='Solo se instala desde el .exe';}
+  $('vAct').hidden=false;}catch(e){}}
+$('bLuego').onclick=()=>$('vAct').hidden=true;
+$('bAct').onclick=async()=>{$('eAct').hidden=true;const r=await pywebview.api.actualizar();
+  if(r.error){$('eAct').hidden=false;$('eAct').textContent=r.error;return;}$('aBotones').hidden=true;$('aProg').hidden=false;};
+function progresoAct(t,h,tot){$('aTexto').textContent=t;$('aBarra').style.width=(tot?Math.min(100,h/tot*100):0)+'%';}
+function falloAct(t){$('aProg').hidden=true;$('aBotones').hidden=false;$('eAct').hidden=false;$('eAct').textContent=t;}
+window.addEventListener('pywebviewready',()=>setTimeout(buscarActualizacion,1500));
 </script>
 </body>
 </html>

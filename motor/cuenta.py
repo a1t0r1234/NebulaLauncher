@@ -77,7 +77,9 @@ def _minecraft(ms: dict) -> dict:
     if "name" not in perfil:
         raise RuntimeError("Esta cuenta de Microsoft no tiene Minecraft: Java Edition.")
     _guardar(ms)
-    return {"nombre": perfil["name"], "uuid": perfil["id"], "token": mc["access_token"]}
+    skins = [s for s in perfil.get("skins", []) if s.get("state") == "ACTIVE"] or perfil.get("skins", [])
+    skin = skins[0].get("url") if skins else None
+    return {"nombre": perfil["name"], "uuid": perfil["id"], "token": mc["access_token"], "skin": skin}
 
 
 def _registro(paso: str, datos) -> None:
