@@ -1,9 +1,11 @@
 """Rutas y ajustes de Nebula Launcher (Nebula Studios)."""
 import json
 import os
+import sys
 from pathlib import Path
 
-RAIZ = Path(__file__).resolve().parents[1]
+# en el .exe (PyInstaller) la interfaz y los json van dentro, descomprimidos en sys._MEIPASS
+RAIZ = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
 DATOS = Path(os.environ.get("APPDATA", Path.home())) / ".nebula"
 MINECRAFT = DATOS / "minecraft"          # versiones, librerías, assets y Java (compartido entre proyectos)
 INSTANCIAS = DATOS / "instancias"        # una carpeta de juego por proyecto (mods, config, capturas...)
