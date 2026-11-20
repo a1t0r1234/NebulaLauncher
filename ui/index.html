@@ -87,6 +87,13 @@ main{position:fixed;left:84px;right:0;top:34px;bottom:0}
 .newsi small{color:var(--dim);font-size:11px}
 .small{font-size:12px;color:var(--muted);line-height:1.5}
 .online{display:flex;align-items:baseline;gap:8px}
+.clanes{display:grid;gap:6px}
+.clan{display:grid;grid-template-columns:18px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px}
+.clan .n{color:var(--muted);font-variant-numeric:tabular-nums}
+.clan .n.top{color:#f5d76e}
+.clan .nom{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clan .tag{font-weight:700;margin-right:6px}
+.clan .dinero{color:#f5d76e;font-variant-numeric:tabular-nums}
 .online b{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
 .err{color:#fecaca;background:#7f1d1d55;border:1px solid #f8717155;border-radius:10px;padding:10px 12px;font-size:12.5px;max-width:460px;margin-top:14px}
 /* login */
@@ -184,7 +191,7 @@ input[type=range]{accent-color:var(--violet);width:100%}
   </div>
   <div class="cards">
     <div class="card"><h4>Novedades</h4><div id="novedades" style="display:grid;gap:12px"></div></div>
-    <div class="card"><h4>Tu partida</h4><div class="small">Tus horas, jefes vencidos y puesto en el ranking aparecerán aquí cuando esté listo el panel de cuentas.</div></div>
+    <div class="card"><h4>Clanes</h4><div id="clanes" class="clanes"><div class="small">Cargando…</div></div></div>
     <div class="card"><h4>Ahora en el servidor</h4><div class="online"><b id="nOnline">–</b><span class="small" id="nMax"></span></div></div>
   </div>
 </main>
@@ -267,7 +274,24 @@ async function elegir(p){
   const nov=$('novedades');nov.innerHTML='';
   (p.novedades||[]).slice(0,3).forEach(n=>{const d=document.createElement('div');d.className='newsi';const b=document.createElement('b');b.textContent=n.titulo;const s=document.createElement('small');s.textContent=n.tipo+' · '+hace(n.fecha);d.append(b,s);nov.appendChild(d);});
   refrescarEstado();
+  pintarClanes();
 }
+async function pintarClanes(){
+  const caja=$('clanes'),p=actual;if(!p)return;
+  if(!p.clanes){caja.innerHTML='<div class="small">Este proyecto no tiene clanes.</div>';return;}
+  const d=await pywebview.api.clanes(p.clanes);if(p!==actual)return;
+  caja.innerHTML='';
+  if(!d||!d.clanes){caja.innerHTML='<div class="small">No se ha podido cargar la clasificación.</div>';return;}
+  if(!d.clanes.length){caja.innerHTML='<div class="small">Todavía no hay clanes. Crea el primero en el juego con /clan.</div>';return;}
+  d.clanes.slice(0,5).forEach(c=>{const f=document.createElement('div');f.className='clan';
+    const n=document.createElement('span');n.className='n'+(c.puesto<=3?' top':'');n.textContent=c.puesto;
+    const nom=document.createElement('span');nom.className='nom';const t=document.createElement('span');t.className='tag';t.style.color=c.color;t.textContent='['+c.simbolo+' '+c.etiqueta+']';
+    nom.append(t,document.createTextNode(c.nombre));nom.title=c.nombre+' · '+c.miembros+' miembros · líder '+c.lider;
+    const din=document.createElement('span');din.className='dinero';din.textContent=c.banco.toLocaleString('es-ES')+' T';
+    f.append(n,nom,din);caja.appendChild(f);});
+  const a=document.createElement('div');a.className='small';a.textContent='Por dinero en el banco del clan · '+hace(d.actualizado);caja.appendChild(a);
+}
+setInterval(pintarClanes,300000);
 function hace(f){const d=Math.round((Date.now()-new Date(f))/864e5);return d<=0?'hoy':d===1?'ayer':'hace '+d+' d';}
 
 async function refrescarEstado(){

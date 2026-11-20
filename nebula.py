@@ -114,6 +114,15 @@ class Api:
     def estado(self, direccion):
         return estado.consultar(direccion)
 
+    def clanes(self, url):
+        """Clasificación de clanes (la publica el servidor en la rama "datos" del repositorio cada 10 minutos)."""
+        try:
+            r = instalador.S.get(url, timeout=10, params={"t": int(time.time() // 300)})   # (sin la caché de más de 5 min)
+            r.raise_for_status()
+            return r.json()
+        except Exception:
+            return None
+
     def guardar_preferencias(self, p):
         actual = ajustes.preferencias()
         actual.update({"ram_gb": max(2, min(16, int(p.get("ram_gb", 6)))), "opcionales": bool(p.get("opcionales"))})

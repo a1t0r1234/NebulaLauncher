@@ -21,6 +21,7 @@
       }
     ],
     "logo": "img/proyectos/craftterra_logo.png",
-    "icono": "img/proyectos/craftterra_icono.png"
+    "icono": "img/proyectos/craftterra_icono.png",
+    "clanes": "https://raw.githubusercontent.com/a1t0r1234/NebulaLauncher/datos/clanes.json"
   }
 ]
