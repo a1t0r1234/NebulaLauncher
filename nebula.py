@@ -12,7 +12,7 @@ import traceback
 
 import webview
 
-from motor import actualizar, ajustes, cuenta, estado, instalador
+from motor import actualizar, ajustes, cuenta, discord, estado, instalador
 
 
 class Api:
@@ -187,7 +187,12 @@ class Api:
             juego = instalador.lanzar(proyecto, version, self._sesion)
             self._js("juegoAbierto")
             self._ventana.minimize()
-            juego.wait()
+            presencia = discord.Presencia()
+            presencia.jugando(proyecto)          # "Jugando a CraftTerra" en Discord (si Discord está abierto)
+            try:
+                juego.wait()
+            finally:
+                presencia.cerrar()
             self._js("juegoCerrado", juego.returncode)
         except Exception as e:
             traceback.print_exc()
