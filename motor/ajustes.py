@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 # versión del launcher: subirla poco a poco con cada actualización (1.1.0 -> 1.1.1 arreglos, 1.2.0 novedades)
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 
 # en el .exe (PyInstaller) la interfaz y los json van dentro, descomprimidos en sys._MEIPASS
 RAIZ = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
